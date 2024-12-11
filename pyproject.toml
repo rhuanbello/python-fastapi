@@ -9,6 +9,7 @@ readme = "README.md"
 python = "3.12.*"
 fastapi = "^0.115.6"
 uvicorn = "^0.32.1"
+pydantic = {extras = ["email"], version = "^2.10.3"}
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.8.2"
@@ -33,7 +34,7 @@ preview = true
 quote-style = "single"
 
 [tool.taskipy.tasks]
-run = 'uvicorn fast_zero.app:app --reload'
+run = 'fastapi dev fast_zero/app.py --host 0.0.0.0'
 pre_test = 'task lint'
 test = 'pytest --cov=fast_zero -vv'
 post_test = 'coverage html'
