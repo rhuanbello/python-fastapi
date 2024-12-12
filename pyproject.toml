@@ -9,7 +9,10 @@ readme = "README.md"
 python = "3.12.*"
 fastapi = "^0.115.6"
 uvicorn = "^0.32.1"
-pydantic = {extras = ["email"], version = "^2.10.3"}
+pydantic = { extras = ["email"], version = "^2.10.3" }
+sqlalchemy = "^2.0.36"
+pydantic-settings = "^2.6.1"
+alembic = "^1.14.0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.8.2"
@@ -34,12 +37,12 @@ preview = true
 quote-style = "single"
 
 [tool.taskipy.tasks]
-run = 'fastapi dev fast_zero/app.py --host 0.0.0.0'
-pre_test = 'task lint'
-test = 'pytest --cov=fast_zero -vv'
-post_test = 'coverage html'
 lint = 'ruff check . && ruff check . --diff'
 format = 'ruff check . --fix && ruff format .'
+run = 'task format && fastapi dev fast_zero/app.py --host 0.0.0.0'
+pre_test = 'task lint'
+test = 'task format && pytest --cov=fast_zero -vv'
+post_test = 'coverage html'
 
 
 [build-system]
