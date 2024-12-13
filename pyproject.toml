@@ -43,6 +43,7 @@ run = 'task format && fastapi dev fast_zero/app.py --host 0.0.0.0'
 pre_test = 'task lint'
 test = 'task format && pytest --cov=fast_zero -vv'
 post_test = 'coverage html'
+migration = 'alembic revision --autogenerate -m'
 
 
 [build-system]
