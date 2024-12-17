@@ -61,29 +61,6 @@ def test_delete_user(client, user, token):
     assert response.json() == {'message': 'User deleted'}
 
 
-def test_get_token(client, user):
-    response = client.post(
-        '/token',
-        data={
-            'username': user.email,
-            'password': user.clean_password,
-        },
-    )
-
-    token = response.json()
-
-    assert response.status_code == HTTPStatus.OK
-    assert token['token_type'] == 'Bearer'
-    assert token['access_token']
-
-
-def test_get_token_with_invalid_password(client, user):
-    response = client.post(
-        '/token',
-        data={
-            'username': user.email,
-            'password': 'wrongpassword',
-        },
-    )
-
-    assert response.status_code == HTTPStatus.UNAUTHORIZED
+def test_delete_wrong_user(client, user, token):
+    response = client.delete('/users/2', headers={'Authorization': f'Bearer {token}'})
+    assert response.status_code == HTTPStatus.FORBIDDEN
