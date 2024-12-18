@@ -13,7 +13,7 @@ pydantic = { extras = ["email"], version = "^2.10.3" }
 sqlalchemy = "^2.0.36"
 pydantic-settings = "^2.6.1"
 alembic = "^1.14.0"
-pwdlib = {extras = ["argon2"], version = "^0.2.1"}
+pwdlib = { extras = ["argon2"], version = "^0.2.1" }
 python-multipart = "^0.0.19"
 pyjwt = "^2.10.1"
 freezegun = "^1.5.1"
@@ -36,6 +36,7 @@ extend-exclude = ["migrations"]
 [tool.ruff.lint]
 preview = true
 select = ["I", "F", "E", "W", "PL", "PT"]
+ignore = ["PLR0917", "PLR0913"]
 
 [tool.ruff.format]
 preview = true
