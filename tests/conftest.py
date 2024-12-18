@@ -1,3 +1,4 @@
+import factory  # type: ignore
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -9,7 +10,14 @@ from fast_zero.database import get_session
 from fast_zero.models import User, table_registry
 from fast_zero.security import get_password_hash
 
-# A fixture is reusable setup logic for tests.
+
+class UserFactory(factory.Factory):
+    class Meta:
+        model = User
+
+    username = factory.Sequence(lambda n: f'test{n}')  # Generate a unique username for each user (e.g. test1, test2, test3)
+    email = factory.LazyAttribute(lambda obj: f'{obj.username}@test.com')  # Generate a unique email for each user (e.g. test1@test.com)
+    password = factory.LazyAttribute(lambda obj: f'{obj.username}+{obj.email}')  # Generate a unique password for each user(e.g. test1+test1@test.com)
 
 
 @pytest.fixture  # Create a fixture to create a test client and reuse it across tests
@@ -41,13 +49,25 @@ def session():
 @pytest.fixture
 def user(session):
     pwd = 'testtest'
-    user = User(username='John Doe', email='john.doe@example.com', password=get_password_hash(pwd))
+
+    user = UserFactory(password=get_password_hash(pwd))
 
     session.add(user)
     session.commit()
     session.refresh(user)
 
     user.clean_password = pwd
+
+    return user
+
+
+@pytest.fixture
+def other_user(session):
+    user = UserFactory()
+
+    session.add(user)
+    session.commit()
+    session.refresh(user)
 
     return user
 
