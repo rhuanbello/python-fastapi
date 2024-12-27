@@ -4,7 +4,7 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
-from sqlalchemy.pool import StaticPool
+from testcontainers.postgres import PostgresContainer
 
 from fast_zero.app import app
 from fast_zero.database import get_session
@@ -42,13 +42,17 @@ def client(session):
         yield client
 
 
+@pytest.fixture(scope='session') # Create a fixture to create a database engine
+def engine():
+    with PostgresContainer('postgres:16', driver='psycopg') as postgres: # Create a Postgres container
+        _engine = create_engine(postgres.get_connection_url())
+
+        with _engine.begin(): 
+            yield _engine # Return the engine
+
+
 @pytest.fixture  # create a fixture to with a memory database engine & returns a session
-def session():
-    engine = create_engine(
-        'sqlite:///:memory:',
-        connect_args={'check_same_thread': False},
-        poolclass=StaticPool,
-    )  # setup the connection to the database / the engine is a bridge between the code and the db
+def session(engine): # receives the engine fixture
     table_registry.metadata.create_all(engine)  # creates the database structure (tables) based on the metadata in table_registry
 
     with Session(engine) as session:  # start a session that is a temporary connection to the database / "with" stmt make the session closes
