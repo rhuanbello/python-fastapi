@@ -5,8 +5,26 @@ jobs: # Jobs to run when the workflow is triggered
   test: # Job name
     runs-on: ubuntu-latest # Operating system to run the job on
 
+    env: # Environment variables to set
+      DATABASE_URL: ${{ secrets.DATABASE_URL}}
+      SECRET_KEY: ${{ secrets.SECRET_KEY}}
+      ALGORITHM: ${{ secrets.ALGORITHM}}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES}}
+
     steps: # Steps to run in the job
-      - name: Instalar o Python # The first step to run the app is to install Python
+      - name: Cloning Repo # The first step to run the app is to clone the repository
+        uses: actions/checkout@v3 # A GitHub action already available to clone the repository
+
+      - name: Installing Python # The first step to run the app is to install Python
         uses: actions/setup-python@v5 # A GitHub action already available to set up Python
         with:
           python-version: "3.12" # Version of Python to install
+
+      - name: Installing Poetry # The second step to run the app is to install Poetry
+        run: pipx install poetry
+
+      - name: Installing Dependencies # The third step to run the app is to install the dependencies
+        run: poetry install
+
+      - name: Running Tests # The fourth step to run the app is to run the tests
+        run: poetry run task test
